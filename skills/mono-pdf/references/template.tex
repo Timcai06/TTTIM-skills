@@ -1,0 +1,577 @@
+\documentclass[10pt,a4paper,fontset=none]{ctexart}
+
+\usepackage[top=3.0cm, bottom=2.5cm, left=2.0cm, right=2.0cm, headheight=14pt, headsep=1.1cm, footskip=1.3cm]{geometry}
+\usepackage{fontspec}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, patterns, calc}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{enumitem}
+\usepackage{hyperref}
+
+% ============================================================
+% 字体：全无衬线（Helvetica Neue + PingFang SC）
+% ============================================================
+\setmainfont{Helvetica Neue}[BoldFont = Helvetica Neue Bold]
+\setsansfont{Helvetica Neue}[BoldFont = Helvetica Neue Bold]
+\setCJKmainfont{PingFang SC}[BoldFont = PingFang SC Semibold]
+\setCJKsansfont{PingFang SC}[BoldFont = PingFang SC Semibold]
+\newfontfamily\LatinThin{Helvetica Neue UltraLight}
+\newfontfamily\LatinMed{Helvetica Neue Medium}
+\newCJKfontfamily\CJKthin{PingFang SC Thin}
+\newCJKfontfamily\CJKmed{PingFang SC Medium}
+\newcommand{\Thin}{\LatinThin\CJKthin}
+\newcommand{\Med}{\LatinMed\CJKmed}
+\xeCJKDeclareCharClass{CJK}{"2192, "2190}   % 箭头走 PingFang（Helvetica Neue 无此字形）
+
+% 黑白灰调色板
+\definecolor{Ink}{HTML}{111111}
+\definecolor{Sub}{HTML}{5C5C5C}
+\definecolor{Mute}{HTML}{8C8C8C}
+\definecolor{Hair}{HTML}{D6D6D6}
+\definecolor{Fill}{HTML}{F2F2F2}
+\definecolor{Fill2}{HTML}{E4E4E4}
+\definecolor{DarkBg}{HTML}{000000}
+\definecolor{DarkSub}{HTML}{A6A6A6}
+\definecolor{DarkLine}{HTML}{3A3A3A}
+
+\hypersetup{colorlinks=true, linkcolor=Ink, urlcolor=Ink, pdftitle={KIBITION 高级动效剪辑优化方案（汇报版）}}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\linespread{1.45}
+\sloppy
+\setlist[itemize]{leftmargin=1.1em, itemsep=5pt, topsep=4pt, parsep=0pt,
+  label={\raisebox{0.32em}{\color{Ink}\rule{0.45em}{0.7pt}}}}
+
+% ============================================================
+% 页眉页脚
+% ============================================================
+\newcommand{\SecLabel}{}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\fontsize{8}{10}\selectfont\textbf{\color{Ink}KIBITION}\hspace{1.6em}{\color{Sub}高级动效剪辑优化方案}}
+\fancyhead[R]{\fontsize{8}{10}\selectfont\color{Sub}\SecLabel}
+\fancyfoot[L]{\fontsize{8}{10}\selectfont\color{Sub}剪辑插件演进 · 汇报版\hspace{1.4em}2026.11.26}
+\fancyfoot[R]{\fontsize{8}{10}\selectfont\textbf{\color{Ink}\thepage}{\color{Sub}\,/\,\pageref{LastPage}}}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% ============================================================
+% 版式宏
+% ============================================================
+% 章节：顶部黑线 + 大标题 + 导语
+\newcommand{\Section}[4]{%
+  \newpage
+  \renewcommand{\SecLabel}{#1\hspace{0.8em}#2}%
+  \phantomsection\label{sec:#1}%
+  {\color{Ink}\rule{\linewidth}{1.3pt}}\par
+  \vspace{0.8cm}
+  {\fontsize{28}{34}\selectfont\bfseries\color{Ink}#3\par}
+  \vspace{0.55cm}
+  {\fontsize{10.5}{17}\selectfont\color{Ink}#4\par}
+}
+\newcommand{\Sub}[1]{%
+  \par\vspace{0.85cm}
+  {\fontsize{13.5}{17}\selectfont\Med\color{Ink}#1\par}
+  \vspace{0.3cm}
+}
+\newcommand{\Note}[1]{{\fontsize{8}{12}\selectfont\color{Sub}#1}}
+\newcommand{\ColHead}[1]{{\fontsize{8}{10}\selectfont\color{Sub}#1}}
+
+% 三线表
+\newcommand{\TopRule}{\arrayrulecolor{Ink}\specialrule{0.7pt}{0pt}{3pt}}
+\newcommand{\HeadRule}{\arrayrulecolor{Hair}\specialrule{0.5pt}{3pt}{4pt}}
+\newcommand{\RowRule}{\arrayrulecolor{Hair}\specialrule{0.3pt}{3pt}{3pt}}
+\newcommand{\BotRule}{\arrayrulecolor{Ink}\specialrule{0.7pt}{3pt}{0pt}}
+
+% 纯黑细边框重点框
+\newcommand{\KeyBox}[3]{%
+  \par\noindent{\fboxsep=13pt\fboxrule=0.9pt
+  \fcolorbox{Ink}{white}{%
+    \parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{%
+      {\fontsize{12.5}{16}\selectfont\Med\color{Ink}#1}\hfill{\fontsize{12.5}{16}\selectfont\bfseries\color{Ink}#2}\par
+      \vspace{0.3em}
+      {\fontsize{9.5}{16}\selectfont\color{Ink}#3}%
+    }}}\par
+}
+
+\begin{document}
+
+% ============================================================
+% 封面
+% ============================================================
+\thispagestyle{empty}
+\enlargethispage{1.4cm}
+\pagecolor{DarkBg}
+\color{white}
+\hypersetup{linkcolor=white}
+\vspace*{-0.6cm}
+\noindent
+{\fontsize{9.5}{12}\selectfont\textbf{KIBITION}}\hfill{\fontsize{9}{12}\selectfont 高级动效剪辑 · 方案汇报\hspace{1.6em}2026.11.26}\par
+\vspace{0.45cm}
+{\color{white}\rule{\linewidth}{0.5pt}}
+
+\vspace{1.0cm}
+{\fontsize{12}{15}\selectfont 不改核心架构 · 剪辑插件内增量演进\par}
+\vspace{0.35cm}
+{\fontsize{32}{40}\selectfont\bfseries 高级动效剪辑优化方案\par}
+
+\vspace{0.75cm}
+\noindent\hspace*{-0.15cm}{\fontsize{124}{108}\selectfont\bfseries 5\hspace{0.08em}·\hspace{0.08em}4\hspace{0.08em}·\hspace{0.08em}3\par}
+
+\vspace{0.5cm}
+{\color{white}\rule{\linewidth}{0.8pt}}\par
+\vspace{0.45cm}
+
+\noindent
+\begin{minipage}[t]{0.3\linewidth}
+  {\fontsize{9}{11}\selectfont Agent 工作闭环}\par\vspace{0.12cm}
+  {\fontsize{26}{30}\selectfont\bfseries 5 步}\par\vspace{0.3cm}
+  {\fontsize{8.5}{15}\selectfont 观察、规划确认、分层执行、视觉自查、自然语言微调，独立做出成片。}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.3\linewidth}
+  {\fontsize{9}{11}\selectfont 图层解耦}\par\vspace{0.12cm}
+  {\fontsize{26}{30}\selectfont\bfseries 4 层}\par\vspace{0.3cm}
+  {\fontsize{8.5}{15}\selectfont 人物让位、图形、贴脸测量、字压人后各自独立，二次粗剪自动跟随。}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.3\linewidth}
+  {\fontsize{9}{11}\selectfont 输出一致}\par\vspace{0.12cm}
+  {\fontsize{26}{30}\selectfont\Thin 3 端}\par\vspace{0.3cm}
+  {\fontsize{8.5}{15}\selectfont 制作页预览、MP4 成片、CapCut 草稿，同一份数据三端同步。}
+\end{minipage}
+
+\vspace{0.8cm}
+{\color{DarkLine}\rule{\linewidth}{0.5pt}}\par
+\vspace{0.35cm}
+
+{\hypersetup{linkcolor=white}
+\fontsize{9.5}{12}\selectfont
+\renewcommand{\arraystretch}{1.55}
+\noindent\begin{tabularx}{\linewidth}{@{} p{1.5cm} >{\raggedright\arraybackslash}X r @{}}
+  01 & 目标与技术选型\hspace{0.8em}{\color{DarkSub}为什么是母版主力 + 逃生舱兜底} & \pageref{sec:01} \\
+  02 & Agent 宏观架构\hspace{0.8em}{\color{DarkSub}五步闭环与 LLM / 确定性模块边界} & \pageref{sec:02} \\
+  03 & 四层解耦模型\hspace{0.8em}{\color{DarkSub}二次粗剪自动跟随与三端一致} & \pageref{sec:03} \\
+  04 & 渲染解耦\hspace{0.8em}{\color{DarkSub}实时预览、本机 GPU 导出与云端兜底} & \pageref{sec:04} \\
+  05 & 分阶段交付路线\hspace{0.8em}{\color{DarkSub}M1.5 至 M5} & \pageref{sec:05} \\
+  06 & 验收口径与前置验证\hspace{0.8em}{\color{DarkSub}量化指标与 3 项技术 Spike} & \pageref{sec:06} \\
+\end{tabularx}}
+
+\vfill
+\noindent
+{\fontsize{8.5}{11}\selectfont 适用范围\hspace{0.8em}KIBITION 剪辑插件\hspace{2em}汇报对象\hspace{0.8em}负责人}\hfill{\fontsize{8.5}{11}\selectfont 共 \pageref{LastPage} 页}
+
+\newpage
+\pagecolor{white}
+\color{Ink}
+\hypersetup{linkcolor=Ink}
+
+% ============================================================
+% 01 目标与技术选型
+% ============================================================
+\Section{01}{目标与选型}{目标与技术选型}{%
+让剪辑 Agent \textbf{独立}做出对标参考片水准的高级动效成片。前提是\textbf{不改现有插件化 Agent 核心架构}——调度引擎、插件框架、网关内核一律不动，全部能力以新工具的形式在剪辑插件内增量挂载。}
+
+\Sub{选型：确定性为主，自由编写为辅}
+
+\begin{center}
+\begin{tikzpicture}[x=0.995cm, y=1cm, font=\fontsize{8.5}{12}\selectfont]
+  % 上方标注
+  \node[anchor=south west, text=Sub, inner sep=0] at (0, 3.05) {LLM 只做语义决策：选母版、填文案槽位};
+  \node[anchor=south east, text=Sub, inner sep=0] at (17, 3.05) {LLM 编写代码};
+  % 主力：28 张母版
+  \fill[Ink] (0, 1.55) rectangle (13.6, 2.85);
+  \node[anchor=west, text=white, align=left] at (0.35, 2.2)
+    {{\fontsize{12}{15}\selectfont\bfseries 28 张参数化母版 · 确定性编译}\\[-1pt]{\color{white!72}主力 · 覆盖约 85–90\% 场景 · 改字调参毫秒级重编译，不再调用模型}};
+  % 逃生舱
+  \draw[Ink, line width=0.8pt, pattern=north east lines, pattern color=Mute] (13.85, 1.55) rectangle (17, 2.85);
+  \node[fill=white, inner sep=3pt, align=center] at (15.425, 2.2) {{\bfseries 自由编写逃生舱}\\[-2pt]{\color{Sub}兜底 · 特殊排版}};
+  % 统一视觉 Token
+  \draw[Ink, line width=0.6pt, fill=Fill] (0, 0.85) rectangle (17, 1.35);
+  \node at (8.5, 1.1) {全片统一视觉 Token：强调色、玻璃底板、圆角、缓动曲线、字幕安全区};
+  % 底座
+  \draw[Ink, line width=0.8pt] (0, 0) rectangle (17, 0.65);
+  \node at (8.5, 0.325) {{\bfseries HyperFrames 透明图层底座}\hspace{0.8em}{\color{Sub}现有图形契约不变，产物在预览 / MP4 / CapCut 三端通用}};
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.35cm}
+{\fontsize{10}{17}\selectfont 全靠 LLM 自由写动效代码，是当前审美漂移、校验易崩、改一个字也要整段重写的根源。新方案把「画什么」留给 LLM，把「怎么画」交给可复现的编译器：同样的参数永远得到同样的画面，参数天然可被滑块调节、可被二次粗剪重排。\par}
+
+\Sub{六条备选路线对比}
+
+{\fontsize{9}{14}\selectfont
+\renewcommand{\arraystretch}{1.18}
+\noindent\begin{tabularx}{\linewidth}{@{} p{3.7cm} p{1.55cm} p{1.75cm} p{1.75cm} >{\raggedright\arraybackslash}X @{}}
+\TopRule
+\ColHead{路线} & \ColHead{视觉稳定} & \ColHead{二次粗剪} & \ColHead{可再编辑} & \ColHead{判断} \\
+\HeadRule
+纯 LLM 自由写代码（现状） & 低 & 需重写 & 弱 & 审美漂移，易撞校验 \\
+AE / Lottie 模板 & 极高 & 弱 & 弱 & 依赖人工工程，中文逐字触发难维护 \\
+CapCut 原生特效 & 中 & 弱 & 原生 & 私有格式、易随版本失效；仅借用关键帧 \\
+另起 Remotion 体系 & 高 & 强 & 透明视频 & 与现有底座割裂，属于重造 \\
+纯母版填参 & 极高 & 自动跟随 & 分层 & 稳，但缺少特殊排版的弹性 \\
+\textbf{混合架构（选定）} & \textbf{极高} & \textbf{自动跟随} & \textbf{分层} & \textbf{底座不变；母版主力 + 逃生舱兜底} \\
+\BotRule
+\end{tabularx}}
+
+% ============================================================
+% 02 Agent 宏观架构
+% ============================================================
+\Section{02}{Agent 架构}{Agent 五步闭环与职责边界}{%
+五个步骤全部复用现有的工具调用与确认卡机制。每一步都明确由谁主导：LLM 负责理解与判断，确定性模块负责计算与生成——这是成片稳定的根本保证。}
+
+\vspace{0.75cm}
+\begin{center}
+\begin{tikzpicture}[x=0.995cm, y=1cm,
+  stepbox/.style={draw=Ink, line width=0.8pt, fill=white, minimum width=2.55cm, minimum height=1.2cm, align=center, inner sep=2pt},
+  cell/.style={align=center, font=\fontsize{8}{12}\selectfont, text=Ink, inner sep=0},
+  arr/.style={-{Stealth[length=2.2mm, width=1.8mm]}, line width=0.7pt, Ink},
+  back/.style={-{Stealth[length=2mm, width=1.7mm]}, line width=0.6pt, Sub}]
+
+  \def\L{2.45}\def\W{2.91}
+  \foreach \i in {1,...,5} { \pgfmathsetmacro{\cx}{\L+\W*(\i-0.5)} \coordinate (c\i) at (\cx, 0); }
+
+  % 步骤头
+  \node[stepbox] (s1) at (c1) {{\fontsize{7.5}{9}\selectfont\color{Sub}01}\\[-2pt]{\fontsize{10.5}{13}\selectfont\bfseries 观察}};
+  \node[stepbox] (s2) at (c2) {{\fontsize{7.5}{9}\selectfont\color{Sub}02}\\[-2pt]{\fontsize{10.5}{13}\selectfont\bfseries 规划确认}};
+  \node[stepbox] (s3) at (c3) {{\fontsize{7.5}{9}\selectfont\color{Sub}03}\\[-2pt]{\fontsize{10.5}{13}\selectfont\bfseries 分层执行}};
+  \node[stepbox] (s4) at (c4) {{\fontsize{7.5}{9}\selectfont\color{Sub}04}\\[-2pt]{\fontsize{10.5}{13}\selectfont\bfseries 视觉自查}};
+  \node[stepbox] (s5) at (c5) {{\fontsize{7.5}{9}\selectfont\color{Sub}05}\\[-2pt]{\fontsize{10.5}{13}\selectfont\bfseries 自然语言微调}};
+  \foreach \a/\b in {s1/s2, s2/s3, s3/s4, s4/s5} \draw[arr] (\a.east) -- (\b.west);
+
+  % 确认卡标记
+  \node[fill=Ink, text=white, font=\fontsize{7}{8}\selectfont, inner sep=3pt] at ($(c2)+(0,0.98)$) {用户确认卡};
+
+  % 泳道线
+  \draw[Ink, line width=0.7pt] (0,-1.05) -- (17,-1.05);
+  \draw[Hair, line width=0.5pt] (0,-2.85) -- (17,-2.85);
+  \draw[Ink, line width=0.7pt] (0,-4.65) -- (17,-4.65);
+  \foreach \i in {1,...,4} { \pgfmathsetmacro{\x}{\L+\W*\i} \draw[Hair, line width=0.4pt, dash pattern=on 1.5pt off 2pt] (\x,-1.25) -- (\x,-4.45); }
+
+  % 泳道标题
+  \node[anchor=north west, align=left, inner sep=0] at (0,-1.35) {{\fontsize{10.5}{13}\selectfont\bfseries LLM}\\[1pt]{\fontsize{8}{11}\selectfont\color{Sub}语义与审美}};
+  \node[anchor=north west, align=left, inner sep=0] at (0,-3.15) {{\fontsize{10.5}{13}\selectfont\bfseries 确定性模块}\\[1pt]{\fontsize{8}{11}\selectfont\color{Sub}几何与时间}};
+
+  % 主导 / 辅助标记
+  \newcommand{\Lead}[2]{\fill[Ink] ($(c#1)+(0,#2)$) circle (0.085);}
+  \newcommand{\Aux}[2]{\draw[Ink, line width=0.6pt] ($(c#1)+(0,#2)$) circle (0.08);}
+  \Aux{1}{-1.45} \Lead{2}{-1.45} \Aux{3}{-1.45} \Lead{4}{-1.45} \Lead{5}{-1.45}
+  \Lead{1}{-3.25} \Aux{2}{-3.25} \Lead{3}{-3.25} \Lead{4}{-3.25} \Aux{5}{-3.25}
+
+  % LLM 泳道内容
+  \node[cell] at ($(c1)+(0,-2.15)$) {读懂口播语义\\与参考片风格};
+  \node[cell] at ($(c2)+(0,-2.15)$) {选句、提炼短语\\选母版、定让位方向};
+  \node[cell] at ($(c3)+(0,-2.15)$) {{\color{Sub}仅逃生舱时}\\{\color{Sub}编写代码}};
+  \node[cell] at ($(c4)+(0,-2.15)$) {看联系表审片\\挑出审美问题};
+  \node[cell] at ($(c5)+(0,-2.15)$) {理解「再大一点」\\等口语意图};
+  % 确定性泳道内容
+  \node[cell] at ($(c1)+(0,-3.95)$) {逐字时间线\\人脸安全区采样};
+  \node[cell] at ($(c2)+(0,-3.95)$) {{\color{Sub}字数、时长}\\{\color{Sub}硬校验}};
+  \node[cell] at ($(c3)+(0,-3.95)$) {母版编译、关键帧\\抠像、测量线};
+  \node[cell] at ($(c4)+(0,-3.95)$) {挡脸、溢出、撞字幕\\硬指标检测};
+  \node[cell] at ($(c5)+(0,-3.95)$) {{\color{Sub}改参数后}\\{\color{Sub}毫秒级重编译}};
+
+  % 回环（画在步骤头上方）
+  \draw[back] (s4.north) -- ++(0,0.42) -| ($(s3.north)+(0.2,0)$);
+  \node[font=\fontsize{7.5}{9}\selectfont, text=Sub, anchor=south, inner sep=1.5pt] at ($(c3)!0.535!(c4)+(0,1.04)$) {不合格 → 局部修补};
+  \draw[back] (s5.north) -- ++(0,1.0) -| ($(s3.north)+(-0.3,0)$);
+  \node[font=\fontsize{7.5}{9}\selectfont, text=Sub, anchor=south, inner sep=1.5pt] at ($(c4)!0.5!(c5)+(0,1.6)$) {微调 → 只改参数，不重写};
+  % 图例
+  \fill[Ink] (0.08,-5.0) circle (0.075); \node[anchor=west, font=\fontsize{7.5}{9}\selectfont, text=Sub] at (0.2,-5.0) {主导};
+  \draw[Ink, line width=0.6pt] (1.18,-5.0) circle (0.07); \node[anchor=west, font=\fontsize{7.5}{9}\selectfont, text=Sub] at (1.3,-5.0) {辅助};
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.75cm}
+\KeyBox{职责边界：LLM 管语义与审美，代码管几何与时间}{分工原则}{%
+\textbf{交给 LLM}\hspace{0.6em}哪几句配卡、提炼成什么短语、强调哪个词、选哪张母版、人物让左还是让右、审片挑毛病。\par
+\textbf{交给代码}\hspace{0.6em}字数硬限、逐字时间换算、像素坐标与字幕安全区、人脸平滑、粗剪重排、三端格式映射。}
+
+\Sub{三条工程稳定性红线}
+\begin{itemize}
+  \item \textbf{入口即校验}：模型输出、工具参数与存档共用同一套边界规则，问题在流水线入口拦下，不拖到渲染阶段才报错。
+  \item \textbf{单卡故障隔离}：一张图形失败只影响自身，其余成果完整保留。
+  \item \textbf{错误分级}：参数错误允许 Agent 自行修正；内部错误直接标记不可重试，杜绝反复弹确认卡的死循环。
+\end{itemize}
+
+% ============================================================
+% 03 四层解耦模型
+% ============================================================
+\Section{03}{四层解耦}{四层解耦：人、字、图各归其位}{%
+四层分别存储、独立叠加。关键约定只有一条：\textbf{所有图层都锚定「原片时间」，而不是「成片时间」}——无论口播怎么二次粗剪，图层都能找回自己该出现的位置。}
+
+\vspace{0.2cm}
+\begin{center}
+\begin{tikzpicture}[x=0.995cm, y=1cm, font=\fontsize{8.5}{13}\selectfont]
+  \def\dy{1.16}
+  \newcommand{\Slab}[3]{% y, fill, border style
+    \begin{scope}[shift={(0,#1)}, xslant=1.25]
+      \fill[#2, opacity=0.94] (0,0) rectangle (4.9,0.95);
+      \draw[Ink, line width=0.7pt, #3] (0,0) rectangle (4.9,0.95);
+    \end{scope}}
+  \newcommand{\Person}[2]{% y, color
+    \begin{scope}[shift={(0,#1)}]
+      \fill[#2] (4.15,0.6) circle (0.13);
+      \fill[#2] (3.83,0.14) .. controls (3.85,0.47) and (4.45,0.47) .. (4.47,0.14) -- cycle;
+    \end{scope}}
+
+  % 0 素材关键帧层
+  \Slab{0}{Fill2}{}
+  \Person{0}{Mute}
+  \draw[Ink, line width=0.6pt, -{Stealth[length=1.6mm]}] (3.2,0.32) -- (3.68,0.32);
+  % 1 参数化图形层
+  \Slab{\dy}{white}{}
+  \begin{scope}[shift={(0,\dy)}, xslant=1.25]
+    \fill[Ink] (0.35,0.62) rectangle (1.75,0.74);
+    \fill[Mute] (0.35,0.42) rectangle (1.45,0.5);
+    \fill[Mute] (0.35,0.26) rectangle (1.25,0.34);
+    \draw[Ink, line width=0.5pt] (0.22,0.14) rectangle (1.95,0.84);
+  \end{scope}
+  % 2 字压人后抠像层
+  \Slab{2*\dy}{white}{dash pattern=on 2pt off 1.5pt}
+  \Person{2*\dy}{Ink}
+  % 3 贴脸测量层
+  \Slab{3*\dy}{white}{}
+  \begin{scope}[shift={(0,3*\dy)}]
+    \draw[Ink, line width=0.6pt] (4.15,0.6) circle (0.17);
+    \draw[Ink, line width=0.5pt, dash pattern=on 1.5pt off 1.2pt] (3.6,0.6) -- (4.75,0.6);
+    \draw[Ink, line width=0.5pt, dash pattern=on 1.5pt off 1.2pt] (4.15,0.2) -- (4.15,0.88);
+    \draw[Ink, line width=0.5pt] (3.95,0.3) -- (4.15,0.2) -- (4.35,0.3);
+  \end{scope}
+  % 字幕（现有）
+  \begin{scope}[shift={(0,4*\dy)}, xslant=1.25]
+    \draw[Mute, line width=0.5pt, dash pattern=on 1.5pt off 1.5pt] (0,0) rectangle (4.9,0.95);
+    \fill[Mute] (1.9,0.22) rectangle (3.0,0.32);
+  \end{scope}
+
+  % 标注
+  \newcommand{\Tag}[4]{% level, num, title, desc
+    \draw[Hair, line width=0.5pt] (6.25,#1*\dy+0.48) -- (7.15,#1*\dy+0.48);
+    \node[anchor=west, inner sep=0, text width=8.6cm, align=left] at (7.3,#1*\dy+0.48)
+      {{\color{Sub}#2}\hspace{0.55em}{\fontsize{10}{13}\selectfont\bfseries #3}\hspace{0.7em}{\color{Sub}#4}};}
+  \Tag{0}{L1}{素材关键帧层}{人物平滑缩放让位，为图形腾出版面}
+  \Tag{1}{L2}{参数化图形层}{28 张母版编译的透明图层，逐字踩点}
+  \Tag{2}{L3}{字压人后抠像层}{只抠需要的几秒，把大字压在人物身后}
+  \Tag{3}{L4}{贴脸测量层}{人脸跟踪 + 平滑，测量线稳贴面部}
+  \Tag{4}{—}{字幕层}{现有能力，保持不变}
+
+  \draw[Mute, line width=0.5pt, -{Stealth[length=1.6mm]}] (-0.35,0.1) -- (-0.35,4*\dy+0.85);
+  \node[rotate=90, anchor=south, font=\fontsize{7.5}{9}\selectfont, text=Sub] at (-0.52,2.3) {合成顺序 · 自下而上};
+\end{tikzpicture}
+\end{center}
+
+\Sub{二次粗剪自动跟随}
+
+{\fontsize{9}{15}\selectfont
+\noindent
+\begin{minipage}[t]{0.235\linewidth}
+  {\color{Ink}\rule{\linewidth}{0.7pt}}\par\vspace{0.2cm}
+  {\fontsize{10.5}{13}\selectfont\bfseries 完整保留}\par\vspace{0.1cm}
+  {\color{Sub}按原片锚点找回新位置，自动重排触发点，不调用模型。}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.235\linewidth}
+  {\color{Ink}\rule{\linewidth}{0.7pt}}\par\vspace{0.2cm}
+  {\fontsize{10.5}{13}\selectfont\bfseries 部分裁切}\par\vspace{0.1cm}
+  {\color{Sub}剪掉一段口误时自动缩短时长，重算剩余触发点。}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.235\linewidth}
+  {\color{Ink}\rule{\linewidth}{0.7pt}}\par\vspace{0.2cm}
+  {\fontsize{10.5}{13}\selectfont\bfseries 完全剪除}\par\vspace{0.1cm}
+  {\color{Sub}不静默删除，提示由用户或 Agent 决定删除或改绑。}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.235\linewidth}
+  {\color{Ink}\rule{\linewidth}{0.7pt}}\par\vspace{0.2cm}
+  {\fontsize{10.5}{13}\selectfont\bfseries 手工锁定}\par\vspace{0.1cm}
+  {\color{Sub}用户亲手拖动过的图形，后续重排不再覆盖。}
+\end{minipage}}
+
+\Sub{三端一致：同一份分层数据，三端各自映射}
+
+{\fontsize{9}{14}\selectfont
+\renewcommand{\arraystretch}{1.15}
+\noindent\begin{tabularx}{\linewidth}{@{} p{3.2cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X @{}}
+\TopRule
+\ColHead{图层} & \ColHead{制作页预览} & \ColHead{MP4 导出} & \ColHead{CapCut 草稿} \\
+\HeadRule
+L1 素材关键帧 & 播放器实时插值 & 动态缩放叠加 & 原生关键帧，可直接拖改 \\
+L2 / L4 图形与测量 & 网页实时播放 & 透明图层叠加 & 独立透明画中画轨 \\
+L3 人物抠像 & 透明视频同步播放 & 透明图层叠加 & 独立透明画中画轨 \\
+\BotRule
+\end{tabularx}}
+
+% ============================================================
+% 04 渲染解耦
+% ============================================================
+\Section{04}{渲染解耦}{预览与导出彻底解耦}{%
+制作页不再等视频渲染：预览直接在网页里实时播放图层，导出才真正逐帧合成。导出优先走本机显卡，云端只在本机能力不足时兜底。}
+
+\vspace{0.95cm}
+\begin{center}
+\begin{tikzpicture}[x=0.995cm, y=1cm, font=\fontsize{8.5}{12}\selectfont,
+  mid/.style={draw=Ink, line width=0.8pt, fill=white, minimum width=4.6cm, minimum height=1.25cm, align=center, inner sep=3pt},
+  outbox/.style={draw=Ink, line width=0.6pt, fill=Fill, minimum width=4.2cm, minimum height=0.95cm, align=center, inner sep=3pt},
+  arr/.style={-{Stealth[length=2.2mm, width=1.8mm]}, line width=0.7pt, Ink}]
+
+  \node[fill=Ink, text=white, minimum width=3.1cm, minimum height=4.9cm, align=center] (src) at (1.55,0)
+    {{\fontsize{12.5}{16}\selectfont\bfseries 分镜文档}\\[3pt]{\color{white!72}单一数据源}\\[10pt]{\fontsize{7.5}{11}\selectfont\color{white!72}母版参数}\\{\fontsize{7.5}{11}\selectfont\color{white!72}原片锚点}\\{\fontsize{7.5}{11}\selectfont\color{white!72}图层关系}};
+
+  \node[mid] (pv) at (7.2, 1.9) {{\fontsize{10}{13}\selectfont\bfseries 制作页实时预览}\\{\color{Sub}零视频渲染 · 网页实时播放}};
+  \node[mid] (gpu) at (7.2, 0) {{\fontsize{10}{13}\selectfont\bfseries 本机离屏 GPU 导出}\\{\color{Sub}复用桌面端内核 · 零额外下载}};
+  \node[mid, dash pattern=on 3pt off 2pt] (cloud) at (7.2, -1.9) {{\fontsize{10}{13}\selectfont\bfseries 云端渲染}\\{\color{Sub}本机自检失败时自动接管}};
+  \node[fill=Ink, text=white, font=\fontsize{7}{8}\selectfont, inner sep=2.5pt, anchor=south west] at (gpu.north west) {主力};
+  \node[draw=Ink, line width=0.5pt, fill=white, font=\fontsize{7}{8}\selectfont, inner sep=2pt, anchor=south west] at (cloud.north west) {兜底};
+
+  \node[outbox] (o1) at (14.9, 1.9) {{\bfseries 所见即所得}\\[-2pt]{\color{Sub}改字、调参 1 秒内可见}};
+  \node[outbox] (o2) at (14.9, 0.45) {{\bfseries MP4 成片}};
+  \node[outbox] (o3) at (14.9, -0.85) {{\bfseries CapCut 草稿}\\[-2pt]{\color{Sub}透明图层，可再编辑}};
+
+  \draw[arr] (src.east |- pv) -- (pv.west);
+  \draw[arr] (src.east |- gpu) -- (gpu.west);
+  \draw[arr] (src.east |- cloud) -- (cloud.west);
+  \draw[arr] (pv.east) -- (o1.west);
+  \draw[arr] (gpu.east) -- ++(0.5,0) |- (o2.west);
+  \draw[arr] (gpu.east) -- ++(0.5,0) |- (o3.west);
+  \draw[arr, Sub, dash pattern=on 3pt off 2pt] (cloud.east) -- ++(1.1,0) |- ($(o3.west)+(0,-0.22)$);
+  \draw[-{Stealth[length=1.8mm]}, line width=0.6pt, Sub, dash pattern=on 2pt off 1.5pt] (gpu.south) -- (cloud.north);
+  \node[anchor=west, font=\fontsize{7}{9}\selectfont, text=Sub] at ($(gpu.south)!0.5!(cloud.north)+(0.08,0)$) {降级};
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.95cm}
+\noindent
+\begin{minipage}[t]{0.3\linewidth}
+  {\color{Ink}\rule{\linewidth}{0.7pt}}\par\vspace{0.25cm}
+  {\fontsize{9}{11}\selectfont\color{Sub}制作页预览}\par\vspace{0.1cm}
+  {\fontsize{24}{28}\selectfont\bfseries 0 渲染}\par\vspace{0.25cm}
+  {\fontsize{9}{15}\selectfont 出稿、改字、拖滑块调参都直接在网页里看到结果；Agent 自查截图也走这条路，零等待。}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.3\linewidth}
+  {\color{Ink}\rule{\linewidth}{0.7pt}}\par\vspace{0.25cm}
+  {\fontsize{9}{11}\selectfont\color{Sub}本机导出}\par\vspace{0.1cm}
+  {\fontsize{24}{28}\selectfont\bfseries 0 下载}\par\vspace{0.25cm}
+  {\fontsize{9}{15}\selectfont 复用桌面端自带的浏览器内核离屏逐帧出图，不再另下 Chrome，国内网络不卡；Mac / Windows 各走原生显卡加速。}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.3\linewidth}
+  {\color{Ink}\rule{\linewidth}{0.7pt}}\par\vspace{0.25cm}
+  {\fontsize{9}{11}\selectfont\color{Sub}云端兜底}\par\vspace{0.1cm}
+  {\fontsize{24}{28}\selectfont\Thin 自动降级}\par\vspace{0.25cm}
+  {\fontsize{9}{15}\selectfont 老旧机器显卡自检不通过时无感切到云端渲染，用户侧流程不变。}
+\end{minipage}
+
+\Sub{跨平台三个关键点}
+\begin{itemize}
+  \item \textbf{透明视频格式}：Mac 透明格式已验证；Windows 剪映 / CapCut 的透明兼容性需实测，并备好「黑底 + 遮罩双轨」通用兜底。
+  \item \textbf{本机抠像加速}：Mac 走系统原生加速，Windows 兼容核显与独显；模型托管国内存储，支持断点续传。
+  \item \textbf{字体一致}：开源可商用中文字体随应用离线打包，杜绝两端行高不一致或缺字方块。
+\end{itemize}
+
+% ============================================================
+% 05 分阶段交付路线
+% ============================================================
+\Section{05}{交付路线}{分阶段交付路线}{%
+先止血、再出主力能力、最后补齐高阶效果。每个里程碑都以\textbf{「Agent 独立成片」}作为端到端验收标准，而非单个功能可用。}
+
+\vspace{0.9cm}
+\begin{center}
+\begin{tikzpicture}[x=0.995cm, y=1cm, font=\fontsize{8}{11}\selectfont]
+  \draw[Ink, line width=0.8pt] (0,0) -- (17,0);
+  \newcommand{\MS}[4]{% x, label, sub, filled
+    \ifnum#4=1 \fill[Ink] (#1,0) circle (0.13); \else \draw[Ink, line width=0.8pt, fill=white] (#1,0) circle (0.12); \fi
+    \node[anchor=south, inner sep=0, font=\fontsize{11}{13}\selectfont\bfseries] at (#1,0.35) {#2};
+    \node[anchor=north, inner sep=0, text=Sub, align=center] at (#1,-0.35) {#3};}
+  \MS{0.75}{M1.5}{契约止血}{1}
+  \draw[Ink, line width=0.8pt, fill=white] (3.25,0) ++(-0.17,0) -- ++(0.17,0.17) -- ++(0.17,-0.17) -- ++(-0.17,-0.17) -- cycle;
+  \node[anchor=south, inner sep=0, font=\fontsize{9}{11}\selectfont\bfseries] at (3.25,0.35) {Spike};
+  \node[anchor=north, inner sep=0, text=Sub, align=center] at (3.25,-0.35) {3 项前置验证};
+  \MS{5.85}{M2}{母版 · 实时预览\\本机渲染}{1}
+  \MS{8.75}{M3}{人物让位\\参考片学习}{1}
+  \MS{11.85}{M4a/b/c}{照片 · 测量线\\字压人后}{0}
+  \MS{15.6}{M5}{3D 骨骼示意}{0}
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.9cm}
+{\fontsize{9}{14.5}\selectfont
+\renewcommand{\arraystretch}{1.12}
+\noindent\begin{tabularx}{\linewidth}{@{} p{1.25cm} p{2.55cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X @{}}
+\TopRule
+\ColHead{阶段} & \ColHead{主题} & \ColHead{核心交付} & \ColHead{验收标准（Agent 独立成片）} \\
+\HeadRule
+\textbf{M1.5} & 契约止血 & 统一入口校验；单卡故障隔离；错误分级，阻断死循环 & 现有流程全通过，零校验崩溃；单张失败不影响其余 \\
+\RowRule
+\textbf{M2} & 母版 · 预览 · 渲染 & 首批 18 张高频母版与编译器；制作页实时预览与滑块；本机离屏渲染；视觉自查；粗剪自动跟随 & 1 分钟内出可预览成片；自查后零挡脸、零撞字幕；删掉中间口播后图形自动重排 \\
+\RowRule
+\textbf{M3} & 人物让位 & 素材关键帧；三端关键帧映射；参考片风格学习 & 按参考片节奏自动完成让位与缓推拉；CapCut 内关键帧可直接拖改 \\
+\RowRule
+\textbf{M4a} & 照片排版 & 5 张照片类母版；按人脸居中裁切 & 自动调用项目照片做网格与 3D 卡片墙，不编造案例 \\
+\RowRule
+\textbf{M4b} & 贴脸测量线 & 人脸跟踪与平滑；5 张测量卡 & 真人晃动口播中测量线稳贴面部 \\
+\RowRule
+\textbf{M4c} & 字压人后 & 本机人像抠像；三端抠像层叠加 & 开场大字压在人物身后，边缘自然 \\
+\RowRule
+\textbf{M5} & 3D 骨骼示意 & 合规授权的分区颅骨模型；先做高频部位预渲染 & 讲到颧骨、下颌骨时自动插入对应部位高亮 \\
+\BotRule
+\end{tabularx}}
+
+\vspace{0.4cm}
+\Note{实心节点为主线能力，空心节点为高阶增强；M4 三项相互独立，可按业务优先级调整顺序。}
+
+% ============================================================
+% 06 验收口径与前置验证
+% ============================================================
+\Section{06}{验收与验证}{验收口径与前置验证}{%
+验收分两层：自动硬指标每次生成都跑，保证「不出错」；黄金素材集盲测按里程碑跑，保证「够好看」。}
+
+\Sub{自动硬指标}
+
+\noindent
+\newcommand{\Metric}[3]{%
+\begin{minipage}[t]{0.225\linewidth}
+  {\color{Ink}\rule{\linewidth}{0.7pt}}\par\vspace{0.22cm}
+  {\fontsize{8.5}{11}\selectfont\color{Sub}#1}\par\vspace{0.1cm}
+  {\fontsize{25}{30}\selectfont\bfseries #2}\par\vspace{0.18cm}
+  {\fontsize{8.5}{13.5}\selectfont\color{Ink}#3}
+\end{minipage}}
+\Metric{人脸遮挡率}{≤ 2\%}{图形压到人脸的帧数占比}\hfill
+\Metric{字幕禁区入侵}{0\%}{图形不得进入字幕安全区}\hfill
+\Metric{字时同步误差}{≤ 0.2s}{图形触发与对应字的偏差}\hfill
+\Metric{连续生成稳定}{100\%}{10 次连续生成零崩溃，单强调色与无溢出全合规}
+
+\Sub{黄金素材集盲测}
+
+\noindent
+\begin{minipage}[t]{0.3\linewidth}
+  {\fontsize{36}{40}\selectfont\bfseries ≥ 4.0}{\fontsize{16}{20}\selectfont\Thin\ / 5}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.66\linewidth}
+  \vspace{-0.15cm}
+  {\fontsize{9.5}{16}\selectfont 固定 4 条测试片：竖屏无逐字、竖屏带逐字、横屏让位、带案例照片。与参考片匿名并排，从\textbf{信息提炼、版面克制、踩点节奏、画面融合、直接可发度}五个维度评分。}
+\end{minipage}
+
+\Sub{进入 M2 前必须完成的 3 项技术 Spike}
+
+\noindent{\fboxsep=0pt\fboxrule=0.9pt
+\fcolorbox{Ink}{white}{%
+\begin{tikzpicture}[x=0.995cm, y=1cm]
+  \useasboundingbox (0,0) rectangle (16.9,6.2);
+  \foreach \x in {5.633, 11.267} \draw[Hair, line width=0.5pt] (\x,0.45) -- (\x,5.75);
+  \newcommand{\Spike}[5]{%
+    \node[anchor=north west, inner sep=0, text width=4.75cm, align=left] at (#1+0.45,5.75) {%
+      {\fontsize{22}{26}\selectfont\Thin #2}\par\vspace{0.22cm}
+      {\fontsize{10.5}{15}\selectfont\bfseries #3}\par\vspace{0.2cm}
+      {\fontsize{8.5}{14}\selectfont\color{Ink}#4}\par\vspace{0.25cm}
+      {\fontsize{8}{13}\selectfont\color{Sub}不达标兜底：#5}};}
+  \Spike{0}{01}{离屏透明渲染压测}{Mac 与 Windows 上 1080p / 4K 逐帧透明导出的实际倍速与边缘质量。}{整体切换云端渲染。}
+  \Spike{5.633}{02}{Windows 透明画中画实测}{剪映 / CapCut 对两种透明视频格式的兼容性，决定 Windows 默认导出格式。}{黑底 + 遮罩双轨，全版本通用。}
+  \Spike{11.267}{03}{多图实时预览压测}{4K 口播上同时挂 2 个活跃图形（含 40 图网格），测 Mac 与中端核显的流畅度与内存。}{预览自动降级为低清代理。}
+\end{tikzpicture}}}
+
+\vspace{0.5cm}
+\Note{三项 Spike 均有明确兜底，任一不达标只切换实现路径，不阻塞 M2 主线交付。}
+
+\end{document}

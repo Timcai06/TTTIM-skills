@@ -1,0 +1,16 @@
+{
+  "name": "TTTIM-skills",
+  "owner": {
+    "name": "Timcai06"
+  },
+  "plugins": [
+    {
+      "name": "tttim-skills",
+      "description": "Timcai06 curated personal AI agent skills collection",
+      "source": "./skills",
+      "skills": [
+        "mono-pdf"
+      ]
+    }
+  ]
+}
