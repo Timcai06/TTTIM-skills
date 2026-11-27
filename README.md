@@ -37,7 +37,6 @@ TTTIM-skills/
 ├── AGENTS.md                         # Agent 开发规范（CLAUDE.md 软链至此）
 ├── .claude-plugin/marketplace.json   # Claude Code 市场清单
 ├── install.sh                        # 本机多 Agent 一键软链脚本
-├── templates/skill-template/         # 新建 Skill 空白样板
 └── skills/
     └── TTT-<Name>-skill/             # 统一 TTT-xxx-skill 命名，与 SKILL.md 的 name 一致
         ├── SKILL.md                  # 必填：YAML frontmatter + 执行规范

@@ -10,8 +10,6 @@ TTTIM-skills/
 ├── README.md                         # 仓库说明与技能索引表
 ├── install.sh                        # 本机多 Agent 软链同步脚本
 ├── .claude-plugin/marketplace.json   # Claude Code 插件市场清单
-├── templates/
-│   └── skill-template/SKILL.md       # 新建 Skill 标准样板
 └── skills/
     └── TTT-<Name>-skill/             # 命名规范：TTT-<Name>-skill，必须与 SKILL.md 的 name 完全一致
         ├── SKILL.md                  # 必填：YAML frontmatter + 执行规范
@@ -28,7 +26,7 @@ TTTIM-skills/
 ## 新增 / 修改 Skill 标准 5 步检查清单
 
 1. **创建 Skill 目录与文件**
-   基于 `templates/skill-template/SKILL.md` 创建 `skills/TTT-<Name>-skill/SKILL.md`，按需补充 `references/` 或 `scripts/`。
+   在 `skills/TTT-<Name>-skill/` 下创建 `SKILL.md`（参考现有技能结构），按需补充 `references/` 或 `scripts/`。
 2. **写好触发描述（`description`）**
    YAML frontmatter 中的 `description` 必须同时写清：
    - **做什么**（核心能力与产物）；
