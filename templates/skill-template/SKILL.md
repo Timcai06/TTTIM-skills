@@ -1,11 +1,11 @@
 ---
-# 必填：与所在目录名 skills/<kebab-case-name>/ 完全一致（小写字母 + 连字符）
-name: <skill-name>
+# 必填：与所在目录名 skills/TTT-<Name>-skill/ 完全一致（固定 TTT- 前缀 + -skill 后缀）
+name: TTT-<Name>-skill
 # 必填：同时写清「做什么」与「何时触发 / 何时不触发」
 description: <One-sentence summary of what this skill produces or does>. Use when <specific trigger scenarios and user intents>. Do NOT use when <out-of-scope scenarios>.
 ---
 
-# <Skill Title> (`<skill-name>`)
+# <Skill Title> (`TTT-<Name>-skill`)
 
 <!-- 一句话说明本技能的目标、风格定位或核心价值 -->
 

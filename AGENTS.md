@@ -13,14 +13,14 @@ TTTIM-skills/
 ├── templates/
 │   └── skill-template/SKILL.md       # 新建 Skill 标准样板
 └── skills/
-    └── <kebab-case-name>/            # 目录名必须与 SKILL.md 的 name 完全一致
+    └── TTT-<Name>-skill/             # 命名规范：TTT-<Name>-skill，必须与 SKILL.md 的 name 完全一致
         ├── SKILL.md                  # 必填：YAML frontmatter + 执行规范
         ├── references/               # 可选：模板、范例、静态参考资料
         └── scripts/                  # 可选：辅助脚本
 ```
 
 ### 命名与边界规则
-- Skill 目录统一放在 `skills/<kebab-case-name>/` 下，使用小写字母和连字符（例如 `mono-pdf`、`sophon-readme`）。
+- Skill 目录统一放在 `skills/TTT-<Name>-skill/` 下，固定 `TTT-` 前缀 + 大驼峰模块名 + `-skill` 后缀（例如 `TTT-MonoPDF-skill`、`TTT-Readme-skill`）。
 - 目录名必须与 `SKILL.md` YAML frontmatter 中的 `name` 字段**完全一致**。
 - `SKILL.md` 保持精炼、可执行；大段模板、范例或长参考文档放到 `references/`，在 `SKILL.md` 中按相对路径引用。
 - 涉及真实项目的范例放入 `references/` 前应完成脱敏，避免泄露密钥、内网地址或私有敏感信息。
@@ -28,7 +28,7 @@ TTTIM-skills/
 ## 新增 / 修改 Skill 标准 5 步检查清单
 
 1. **创建 Skill 目录与文件**
-   基于 `templates/skill-template/SKILL.md` 创建 `skills/<name>/SKILL.md`，按需补充 `references/` 或 `scripts/`。
+   基于 `templates/skill-template/SKILL.md` 创建 `skills/TTT-<Name>-skill/SKILL.md`，按需补充 `references/` 或 `scripts/`。
 2. **写好触发描述（`description`）**
    YAML frontmatter 中的 `description` 必须同时写清：
    - **做什么**（核心能力与产物）；

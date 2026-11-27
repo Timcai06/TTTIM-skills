@@ -6,7 +6,7 @@ Timcai06 的个人 AI Agent Skills 合集仓库，遵循 [agentskills.io](https:
 
 | Skill | 简介 | 目录 |
 |---|---|---|
-| `mono-pdf` | 极简黑白瑞士编辑风中英文汇报 PDF 生成技能（XeLaTeX + PingFang SC / Helvetica Neue + TikZ，含逐页视觉自查） | [`skills/mono-pdf`](./skills/mono-pdf) |
+| `TTT-MonoPDF-skill` | 极简黑白瑞士编辑风中英文汇报 PDF 生成技能（XeLaTeX + PingFang SC / Helvetica Neue + TikZ，含逐页视觉自查） | [`skills/TTT-MonoPDF-skill`](./skills/TTT-MonoPDF-skill) |
 
 ## 安装方式
 
@@ -16,7 +16,7 @@ Timcai06 的个人 AI Agent Skills 合集仓库，遵循 [agentskills.io](https:
 npx skills add Timcai06/TTTIM-skills -g
 
 # 或只安装指定技能
-npx skills add Timcai06/TTTIM-skills --skill mono-pdf -g
+npx skills add Timcai06/TTTIM-skills --skill TTT-MonoPDF-skill -g
 ```
 
 ### 方式 2：Claude Code 插件市场
@@ -38,7 +38,7 @@ TTTIM-skills/
 ├── install.sh                        # 本机多 Agent 一键软链脚本
 ├── templates/skill-template/         # 新建 Skill 空白样板
 └── skills/
-    └── <skill-name>/                 # 小写连字符命名，与 SKILL.md 的 name 一致
+    └── TTT-<Name>-skill/             # 统一 TTT-xxx-skill 命名，与 SKILL.md 的 name 一致
         ├── SKILL.md                  # 必填：YAML frontmatter + 执行规范
         └── references/               # 可选：模板、脚本、示例
 ```

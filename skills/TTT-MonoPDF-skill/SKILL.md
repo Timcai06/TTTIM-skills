@@ -1,9 +1,9 @@
 ---
-name: mono-pdf
+name: TTT-MonoPDF-skill
 description: Generate minimalist Swiss-editorial monochrome Chinese/English executive report PDFs via XeLaTeX (ctexart + PingFang SC / Helvetica Neue + TikZ). Use when the user asks to create a polished executive brief, proposal, technical architecture report, reimbursement summary, or design-grade PDF in monochrome editorial style.
 ---
 
-# Swiss Editorial Monochrome PDF (`mono-pdf`)
+# Swiss Editorial Monochrome PDF (`TTT-MonoPDF-skill`)
 
 Use this skill to produce publication-grade, minimalist monochrome Chinese/English executive PDFs using XeLaTeX (`ctexart`), inspired by Swiss international typographic style.
 
