@@ -9,7 +9,8 @@
       "description": "Timcai06 curated personal AI agent skills collection",
       "source": "./skills",
       "skills": [
-        "TTT-MonoPDF-skill"
+        "TTT-MonoPDF-skill",
+        "TTT-Readme-skill"
       ]
     }
   ]

@@ -7,6 +7,7 @@ Timcai06 的个人 AI Agent Skills 合集仓库，遵循 [agentskills.io](https:
 | Skill | 简介 | 目录 |
 |---|---|---|
 | `TTT-MonoPDF-skill` | 极简黑白瑞士编辑风中英文汇报 PDF 生成技能（XeLaTeX + PingFang SC / Helvetica Neue + TikZ，含逐页视觉自查） | [`skills/TTT-MonoPDF-skill`](./skills/TTT-MonoPDF-skill) |
+| `TTT-Readme-skill` | 通用 Tim 编辑风 GitHub README 生成与重构技能（项目自适应明暗双主题 SVG、编号章节、`<details>` 渐进折叠、主链路架构与如实边界） | [`skills/TTT-Readme-skill`](./skills/TTT-Readme-skill) |
 
 ## 安装方式
 
